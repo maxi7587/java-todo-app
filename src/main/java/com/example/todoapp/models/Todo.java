@@ -2,8 +2,9 @@ package com.example.todoapp.models;
 
 import java.util.Date;
 import java.util.List;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+// import javax.persistence.CascadeType;
+// import javax.persistence.JoinColumn;
+// import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -30,11 +31,11 @@ public class Todo {
     private Date createdAt = new Date();
 
     /*
-     * @note used OneToMany with JoinColumn instead of a Foreign Key because File could be used by other classes.
+     * Using OneToMany with JoinColumn instead of a Foreign Key because File model could be realted to other classes.
      */
-    @OneToMany
-    @JoinColumn(name="id")
-    private List<File> books;
+    // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    // @JoinColumn(name = "id")
+    private List<File> files;
 
     public Todo() {
         super();
@@ -74,6 +75,14 @@ public class Todo {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<File> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<File> files) {
+        this.files = files;
     }
 
     @Override

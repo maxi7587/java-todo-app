@@ -1,6 +1,7 @@
 package com.example.todoapp.controllers;
 
 import com.example.todoapp.models.File;
+import com.example.todoapp.repositories.FileRepository;
 import com.example.todoapp.services.FileStorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,9 @@ import java.util.stream.Collectors;
 @RestController
 public class FileController {
 
+    @Autowired
+    FileRepository fileRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
     @Autowired
@@ -35,12 +39,21 @@ public class FileController {
             .path(fileName)
             .toUriString();
 
-        return new File(
+        /*return new File(
+            fileName,
+            fileDownloadUri,
+            file.getContentType(),
+            file.getSize()
+        );*/
+
+        File new_file = new File(
             fileName,
             fileDownloadUri,
             file.getContentType(),
             file.getSize()
         );
+
+        return fileRepository.save(new_file);
     }
 
     @PostMapping("/uploadMultipleFiles")
@@ -73,5 +86,22 @@ public class FileController {
             .contentType(MediaType.parseMediaType(contentType))
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
             .body(resource);
+    }
+
+    @GetMapping(value="/files/{id}")
+    public ResponseEntity<?> getFile(@PathVariable("id") String id) {
+        return fileRepository.findById(id)
+            .map(file -> ResponseEntity.ok().build())
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping(value="/files/{id}")
+    public ResponseEntity<?> deleteFile(@PathVariable("id") String id) {
+        return fileRepository.findById(id)
+            .map(file -> {
+                fileRepository.deleteById(id);
+                return ResponseEntity.ok().build();
+            })
+            .orElse(ResponseEntity.notFound().build());
     }
 }

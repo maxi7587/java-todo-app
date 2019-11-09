@@ -43,6 +43,7 @@ public class TodoController {
             .map(todoData -> {
                 todoData.setDescription(todo.getDescription());
                 todoData.setStatus(todo.getStatus());
+                todoData.setFiles(todo.getFiles());
                 Todo updatedTodo = todoRepository.save(todoData);
                 return ResponseEntity.ok().body(updatedTodo);
             })
